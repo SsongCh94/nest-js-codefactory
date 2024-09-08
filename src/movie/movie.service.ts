@@ -1,76 +1,76 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 export interface Movie {
-  id: number;
-  title: string;
+    id: number;
+    title: string;
 }
 
 @Injectable()
 export class MovieService {
-  
-  private movies : Movie[] = [
-    {
-        id: 1,
-        title: '해리포터',
-    },
-    {
-        id: 2,
-        title: '반지의 제왕',
-    },
-];
 
-private idCounter = 3;
+    private movies : Movie[] = [
+        {
+            id: 1,
+            title: '해리포터',
+        },
+        {
+            id: 2,
+            title: '반지의 제왕',
+        },
+    ];
 
-getManyMovies(title?: string){
-    if (!title) {
-        return this.movies;
+    private idCounter = 3;
+
+    getManyMovies(title?: string){
+        if (!title) {
+            return this.movies;
+        }
+
+        return this.movies.filter(m => m.title.startsWith(title));
     }
 
-    return this.movies.filter(m => m.title.startsWith(title));
-}
+    getMovieById(id: number) {
+        const movie = this.movies.find(i => i.id === +id);
 
-getMovieById(id: number) {
-    const movie = this.movies.find(i => i.id === +id);
+        if (!movie) {
+            throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
+        }
 
-    if (!movie) {
-        throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
+        return movie;
     }
 
-    return movie;
-}
+    createMovie(title : string) {
+        const movie: Movie = {
+            id: this.idCounter++,
+            title: title,
+        }
 
-createMovie(title : string) {
-    const movie: Movie = {
-        id: this.idCounter++,
-        title: title,
+        this.movies.push(movie);
+
+        return movie;
     }
 
-    this.movies.push(movie);
+    updateMovie(id : number, title : string) {
+        const targetMovie = this.movies.find(i => i.id === id);
 
-    return movie;
-}
+        if (!targetMovie) {
+            throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
+        }
 
-updateMovie(id : number, title : string) {
-    const targetMovie = this.movies.find(i => i.id === id);
+        Object.assign(targetMovie, {title});
 
-    if (!targetMovie) {
-        throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
+        return targetMovie
     }
 
-    Object.assign(targetMovie, {title});
+    deleteMovie(id : number) {
+        const targetMovieIndex = this.movies.findIndex(i => i.id === +id);
 
-    return targetMovie
-}
+        if (targetMovieIndex === -1) {
+            throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
+        }
 
-deleteMovie(id : number) {
-    const targetMovieIndex = this.movies.findIndex(i => i.id === +id);
+        this.movies.splice(targetMovieIndex, 1)
 
-    if (targetMovieIndex === -1) {
-        throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
+        return id;
     }
-
-    this.movies.splice(targetMovieIndex, 1)
-
-    return id;
-}
 }
