@@ -58,6 +58,8 @@ export class MovieService {
     updateMovie(id : number, updateMovieDto : UpdateMovieDto) {
         const targetMovie = this.movies.find(i => i.id === id);
 
+        console.log('%c<ssong> targetMovie   ::', 'color: rgba(0, 153, 0); font-size: 20px;', targetMovie);
+
         if (!targetMovie) {
             throw new NotFoundException('존재하지 않는 ID의 영화입니다.');
         }
